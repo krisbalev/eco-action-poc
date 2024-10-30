@@ -20,37 +20,46 @@
     </div>
 </template>
 
+<!-- src/components/AddTaskForm.vue -->
 <script setup>
 import { reactive } from 'vue';
 import { addTask } from '@/stores/tasksStore';
-import { selectedCoordinates } from '@/stores/mapStore'; // We'll create this store later
+import { selectedCoordinates, pendingMarker } from '@/stores/mapStore';
 
 const task = reactive({
-    description: '',
-    budget: null,
-    coordinates: null,
+  description: '',
+  budget: null,
 });
 
 const handleSubmit = () => {
-    if (task.description && task.budget && selectedCoordinates.value) {
-        addTask({
-            id: Date.now(),
-            description: task.description,
-            budget: task.budget,
-            coordinates: selectedCoordinates.value,
-            status: 'pending',
-            assignedTo: null,
-        });
-        // Reset the form
-        task.description = '';
-        task.budget = null;
-        selectedCoordinates.value = null;
-        alert('Task added successfully!');
-    } else {
-        alert('Please fill in all fields and select a location on the map.');
+  if (task.description && task.budget && selectedCoordinates.value) {
+    addTask({
+      id: Date.now(),
+      description: task.description,
+      budget: task.budget,
+      coordinates: selectedCoordinates.value,
+      status: 'pending', // Set status to 'pending' for new tasks
+      assignedTo: null,
+    });
+
+    // Reset the form
+    task.description = '';
+    task.budget = null;
+    selectedCoordinates.value = null;
+
+    // Remove the pending marker
+    if (pendingMarker.value) {
+      pendingMarker.value.remove();
+      pendingMarker.value = null;
     }
+
+    alert('Task added successfully!');
+  } else {
+    alert('Please fill in all fields and select a location on the map.');
+  }
 };
 </script>
+
 
 <style scoped>
 /* Add any component-specific styles here */
